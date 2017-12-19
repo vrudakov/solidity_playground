@@ -12,6 +12,7 @@ contract Crowdsale {
     token public tokenReward;
     mapping(address => uint256) public balanceOf;
     bool crowdsaleClosed = false;
+    crowdsaleSuccess == false
 
     event GoalReached(address recipient, uint totalAmountRaised);
     event FundTransfer(address backer, uint amount, bool isContribution);
@@ -39,7 +40,7 @@ contract Crowdsale {
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
-        tokenReward.transfer(msg.sender, amount / price);
+        tokenReward.transfer(msg.sender, amount);
         FundTransfer(msg.sender, amount, true);
     }
 
@@ -64,13 +65,25 @@ contract Crowdsale {
      * sends the entire amount to the beneficiary. If goal was not reached, each contributor can withdraw
      * the amount they contributed.
      */
-    function safeWithdrawal() internal {
-        if (crowdsaleClosed == true && beneficiary == msg.sender) {
+    function safeWithdrawal() public {
+        if (crowdsaleClosed == true && crowdsaleSuccess == false) {
+            uint amount = balanceOf[msg.sender];
+            balanceOf[msg.sender] = 0;
+            if (amount > 0) {
+                if (msg.sender.send(amount)) {
+                    FundTransfer(msg.sender, amount, false);
+                } else {
+                    balanceOf[msg.sender] = amount;
+                }
+            }
+        }
+
+        if (crowdsaleClosed == true && crowdsaleSuccess == true && beneficiary == msg.sender) {
             if (beneficiary.send(amountRaised)) {
                 FundTransfer(beneficiary, amountRaised, false);
             } else {
                 //If we fail to send the funds to beneficiary, unlock funders balance
-                crowdsaleClosed = false;
+                fundingGoalReached = false;
             }
         }
     }
