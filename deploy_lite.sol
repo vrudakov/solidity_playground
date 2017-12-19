@@ -23,7 +23,7 @@ contract Crowdsale {
      */
     function Crowdsale(
         address addressOfTokenUsedAsReward
-    ) internal {
+    ) public {
         beneficiary = msg.sender;
         price = 1 ether;
         tokenReward = token(addressOfTokenUsedAsReward);
