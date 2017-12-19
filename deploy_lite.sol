@@ -12,7 +12,7 @@ contract Crowdsale {
     token public tokenReward;
     mapping(address => uint256) public balanceOf;
     bool crowdsaleClosed = false;
-    bool crowdsaleSuccess == false;
+    bool crowdsaleSuccess = false;
 
     event GoalReached(address recipient, uint totalAmountRaised);
     event FundTransfer(address backer, uint amount, bool isContribution);
