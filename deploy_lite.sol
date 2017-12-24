@@ -42,7 +42,7 @@ contract Crowdsale {
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
-        tokenReward.transfer(msg.sender, amount);
+        tokenReward.transfer(msg.sender, amount / amount);
         FundTransfer(msg.sender, amount, true);
     }
 
