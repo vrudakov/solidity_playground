@@ -28,6 +28,7 @@ contract 	baseToken is ERC20, safeMath {
 	uint256			_totalSupply;
 	address			_admin;
 	address 		_crowdSale;
+	bool			_editEnd;
 	string 			_name;
 	string			_symbol;
 	uint8			_decimals;
@@ -115,6 +116,9 @@ contract 	baseToken is ERC20, safeMath {
 	}
 
 	function 	setCrowdSaleAddress( address crowdSale ) public assertAdmin {
+		if ( _editEnd == true )
+			assert( false );
 		_crowdSale = crowdSale;
+		_editEnd = true;
 	}
 }
