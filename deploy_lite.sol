@@ -1,4 +1,4 @@
-pragma solidity ^0.4.16;
+pragma solidity ^0.4.18;
 
 interface token {
     function transfer(address _to, uint256 _value) public returns (bool success);
@@ -42,7 +42,7 @@ contract Crowdsale {
         uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
-        tokenReward.transfer(msg.sender, amount);
+        tokenReward.transfer(msg.sender, amount / price);
         FundTransfer(msg.sender, amount, true);
     }
 
