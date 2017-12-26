@@ -37,9 +37,9 @@ contract Crowdsale {
      */
    function () public payable {
         require(!crowdsaleClosed);
+        uint amount = msg.value;
         if ( (amount % price) != 0)
             assert(false);
-        uint amount = msg.value;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
         tokenReward.transfer(msg.sender, amount / price);
