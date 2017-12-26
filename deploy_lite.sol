@@ -7,73 +7,76 @@ interface token {
 }
 
 contract Crowdsale {
-    address public beneficiary;
-    uint public amountRaised;
-    uint public deadline;
-    uint public price;
-    token public tokenReward;
-    mapping(address => uint256) public balanceOf;
-    bool crowdsaleClosed = false;
-    bool crowdsaleSuccess = false;
+	address 	public beneficiary;
+	uint 		public amountRaised;
+	uint 		public deadline;
+	uint 		public price;
+	token 		public tokenReward;
 
-    event GoalReached(address recipient, uint totalAmountRaised, bool crowdsaleSuccess);
-    event FundTransfer(address backer, uint amount, bool isContribution);
+	mapping(address => uint256) public balanceOf;
+
+	bool 	public crowdsaleClosed = false;
+	bool 	public crowdsaleSuccess = false;
+
+	event 	GoalReached(address recipient, uint totalAmountRaised, bool crowdsaleSuccess);
+	event 	FundTransfer(address backer, uint amount, bool isContribution);
 
     /**
      * Constrctor function
 	 *
      * Setup the owner
      */
-    function Crowdsale( address addressOfTokenUsedAsReward) public {
-        beneficiary = msg.sender;
-        price = 1 ether;
-        tokenReward = token(addressOfTokenUsedAsReward);
-    }
+	function 	Crowdsale( address addressOfTokenUsedAsReward) public {
+		beneficiary = msg.sender;
+		price = 1 ether;
+		tokenReward = token(addressOfTokenUsedAsReward);
+	}
 
-    /**
-     * Fallback function
-     *
-     * The function without name is the default function that is called whenever anyone sends funds to a contract
-     */
-   function () public payable {
-        require(!crowdsaleClosed);
-        if ( (amount % price) != 0)
-            assert(false);
-        uint amount = msg.value;
-        balanceOf[msg.sender] += amount;
-        amountRaised += amount;
-        tokenReward.transfer(msg.sender, amount / price);
-        FundTransfer(msg.sender, amount, true);
-    }
+	/**
+	* Fallback function
+	*
+	* The function without name is the default function that is called whenever anyone sends funds to a contract
+	*/
+	function () public payable {
+		require(!crowdsaleClosed);
 
-    modifier onlyOwner() {
-        require(msg.sender == beneficiary);
-        _;
-    }
+		uint amount = msg.value;
+		if ( (amount % price) != 0)
+			assert(false);
+		balanceOf[msg.sender] += amount;
+		amountRaised += amount;
+		tokenReward.transfer(msg.sender, amount / price);
+		FundTransfer(msg.sender, amount, true);
+	}
 
-    function goalManagment(bool statement) public onlyOwner {
-            crowdsaleClosed = true;
-			crowdsaleSuccess = statement;
+	modifier onlyOwner() {
+		require(msg.sender == beneficiary);
+		_;
+	}
+
+	function goalManagment(bool statement) public onlyOwner {
+			crowdsaleClosed = true;
+			rowdsaleSuccess = statement;
 			GoalReached(beneficiary, amountRaised, crowdsaleSuccess);
-    }
+	}
 
-    /**
-     * Withdraw the funds
-     *
-     * Checks to see if goal or time limit has been reached, and if so, and the funding goal was reached,
-     * sends the entire amount to the beneficiary. If goal was not reached, each contributor can withdraw
-     * the amount they contributed.
-     */
-    function 	withdrawalMoneyBack() public {
+	/**
+	* Withdraw the funds
+	*
+	* Checks to see if goal or time limit has been reached, and if so, and the funding goal was reached,
+	* sends the entire amount to the beneficiary. If goal was not reached, each contributor can withdraw
+	* the amount they contributed.
+	*/
+	function 	withdrawalMoneyBack() public {
 		uint 	amount;
 
-        if (crowdsaleClosed == true && crowdsaleSuccess == false) {
-            amount = balanceOf[msg.sender];
-            balanceOf[msg.sender] = 0;
-            msg.sender.transfer(amount);
-            FundTransfer(msg.sender, amount, false);
-        }
-    }
+		if (crowdsaleClosed == true && crowdsaleSuccess == false) {
+			amount = balanceOf[msg.sender];
+			balanceOf[msg.sender] = 0;
+			msg.sender.transfer(amount);
+			FundTransfer(msg.sender, amount, false);
+		}
+	}
 
 	function	withdrawalOwner() public onlyOwner {
 		if (crowdsaleSuccess == true && crowdsaleClosed == true) {
