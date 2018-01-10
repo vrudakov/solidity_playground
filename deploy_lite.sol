@@ -1,4 +1,4 @@
-                    pragma solidity ^0.4.18;
+pragma solidity ^0.4.18;
 
 interface token {
     function    transfer(address _to, uint256 _value) public returns (bool success);
@@ -12,6 +12,7 @@ contract Crowdsale {
     uint        public deadline;
     uint        public price;
     token       public tokenReward;
+    uint        public excess;
 
     mapping(address => uint256) public balanceOf;
 
@@ -28,7 +29,7 @@ contract Crowdsale {
      */
     function    Crowdsale( address addressOfTokenUsedAsReward) public {
         beneficiary = msg.sender;
-        price = 1 ether;
+        price = 0.1 ether;
         tokenReward = token(addressOfTokenUsedAsReward);
     }
 
@@ -45,6 +46,7 @@ contract Crowdsale {
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
         tokenReward.transfer(msg.sender, amount / price);
+        excess += amount % price;
         FundTransfer(msg.sender, amount, true);
     }
 
@@ -71,7 +73,7 @@ contract Crowdsale {
         uint    amount;
 
         if (crowdsaleClosed == true && crowdsaleSuccess == false) {
-            amount = balanceOf[msg.sender];
+            amount = balanceOf[msg.sender] * price;
             balanceOf[msg.sender] = 0;
             amountRaised -= amount;
             msg.sender.transfer(amount);
@@ -85,6 +87,11 @@ contract Crowdsale {
             FundTransfer(beneficiary, amountRaised, false);
             burnToken();
         }
+    }
+
+    function takeExcess () public onlyOwner {
+        beneficiary.transfer(excess);
+        FundTransfer(beneficiary, excess, false);
     }
 
     function    burnToken() private {
