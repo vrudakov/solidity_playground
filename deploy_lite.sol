@@ -41,12 +41,11 @@ contract Crowdsale {
     function () public payable {
         require(!crowdsaleClosed);
 
-        uint amount = msg.value;
-        require((amount % price) == 0);
+        uint amount = msg.value / price;
         balanceOf[msg.sender] += amount;
         amountRaised += amount;
-        tokenReward.transfer(msg.sender, amount / price);
-        excess += amount % price;
+        tokenReward.transfer(msg.sender, amount);
+        excess += msg.value % price;
         FundTransfer(msg.sender, amount, true);
     }
 
