@@ -43,7 +43,7 @@ contract Crowdsale {
 
         uint amount = msg.value / price;
         balanceOf[msg.sender] += amount;
-        amountRaised += amount;
+        amountRaised += amount * price;
         tokenReward.transfer(msg.sender, amount);
         excess += msg.value % price;
         FundTransfer(msg.sender, amount, true);
@@ -91,6 +91,7 @@ contract Crowdsale {
     function takeExcess () public onlyOwner {
         beneficiary.transfer(excess);
         FundTransfer(beneficiary, excess, false);
+        excess = 0;
     }
 
     function    burnToken() private {
