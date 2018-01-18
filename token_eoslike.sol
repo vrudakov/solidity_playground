@@ -26,7 +26,6 @@ contract ERC20 {
 
 contract 	baseToken is ERC20, safeMath {
 	uint256			_totalSupply;
-	address			_admin;
 	string 			_name;
 	string			_symbol;
 	uint8			_decimals;
@@ -45,14 +44,6 @@ contract 	baseToken is ERC20, safeMath {
 		_balanceOf[msg.sender] = balance;
 		_totalSupply = balance;
 		_decimals = decimals;
-		_admin = msg.sender;
-	}
-
-	modifier 	assertAdmin() {
-		if ( msg.sender != _admin ) {
-			assert( false );
-		}
-		_;
 	}	
 
 	function 	totalSupply() public constant returns ( uint256 ) {
@@ -89,11 +80,6 @@ contract 	baseToken is ERC20, safeMath {
 		_allowance[msg.sender][spender] = amount;
 		Approval( msg.sender, spender, amount );
 		return true;
-	}
-
-	function 	addTotalSupply( uint256 newBalance ) public assertAdmin {
-		_balanceOf[_admin] = add( _balanceOf[_admin], newBalance );
-		_totalSupply = add( _totalSupply, newBalance );
 	}
 
 	function 	burn( uint256 value ) public returns ( bool success ) {
