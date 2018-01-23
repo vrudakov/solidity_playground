@@ -41,9 +41,9 @@ contract Crowdsale {
         require(!crowdsaleClosed);
 
         uint amount = msg.value;
-        balanceOf[msg.sender] = balanceOf[msg.sender] + amount / price;
         tokenReward.transfer(msg.sender, amount / price);
         excess += amount % price;
+        balanceOf[msg.sender] = balanceOf[msg.sender] + amount - excess;
         amountRaised = amountRaised + amount - excess;
         FundTransfer(msg.sender, amount, true);
     }
@@ -71,7 +71,7 @@ contract Crowdsale {
         uint    amount;
 
         if (crowdsaleClosed == true && crowdsaleSuccess == false) {
-            amount = balanceOf[msg.sender] * price;
+            amount = balanceOf[msg.sender];
             balanceOf[msg.sender] = 0;
             amountRaised -= amount;
             msg.sender.transfer(amount);
