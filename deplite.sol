@@ -88,7 +88,9 @@ contract Crowdsale {
     }
 
     function takeExcess () public onlyOwner {
+        require(excess > 0);
         beneficiary.transfer(excess);
+        excess = 0;
         FundTransfer(beneficiary, excess, false);
     }
 
