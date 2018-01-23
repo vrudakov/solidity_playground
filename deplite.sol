@@ -29,7 +29,7 @@ contract Crowdsale {
     function    Crowdsale( ) public {
         beneficiary = msg.sender;
         price = 0.1 ether;
-        tokenReward = token(0x692a70d2e424a56d2c6c27aa97d1a86395877b3a);
+        tokenReward = token();
     }
 
     /**
